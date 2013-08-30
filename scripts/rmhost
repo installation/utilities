@@ -1,0 +1,12 @@
+#!/bin/bash
+
+host="$1"
+
+[ $# -eq 0 ] && { echo "Usage: rmhost HOSTNAME"; exit 1;}
+
+ips=$(host "$host" | awk -F'address' '{ print $2}' | sed -e 's/^ //g')
+ssh-keygen -R "$host"
+
+for ip in $ips; do
+	ssh-keygen -R "$ip"
+done
