@@ -47,23 +47,23 @@ else
 	scripts="$@"
 fi
 
-if [ "$scripts" == "*" ]; then
+if [ -z "$scripts" ]; then
 	e "Installing all scripts"
 	scripts=("$DIR/scripts"/*)
 else
 	IFS=' ' read -a scripts <<< "${scripts}"
 fi
 
-
 for script in "${scripts[@]}"; do
+	script=`basename $script`
 	if [ -f "$DIR/scripts/$script" ]; then
 		e "\nInstalling $script"
-		cp -r "$DIR/scripts/$script" "$path" || e "Installing $script failed" 31
+		#cp -r "$DIR/scripts/$script" "$path" || e "Installing $script failed" 31
 
 		if [ ! -x "$path/$script" ]; then
 			e "Adding execute permission to $script"
-			chmod +x "$script" || e "Cannot add execute permission to $script" 31
+			#chmod +x "$script" || e "Cannot add execute permission to $script" 31
 		fi
-		e "$script installed"
+		e "$script installed" 32
 	fi
 done
