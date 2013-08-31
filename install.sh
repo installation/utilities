@@ -7,7 +7,9 @@
 # Version: 1.0
 
 DIR=$(cd `dirname $0` && pwd)
+path="${path:-/usr/bin}"
 SCRIPTNAME="utilities.sh"
+BUILD=${BUILD:-0}
 
 # Echo colored text
 e()
@@ -26,6 +28,18 @@ ee()
 	exit $exit_code
 }
 
+## Set path
+setpath()
+{
+	[ -z "$1" ] || path="$1"
+
+	if [ -d $path -a -w $path ]; then
+		e "Path is set to $path"
+	else
+		ee "Please specify a valid and writable path"
+	fi
+}
+
 # Checking root access
 if [ $EUID -ne 0 ]; then
 	e "You are not running this script as root!" 31
@@ -35,26 +49,16 @@ fi
 while getopts p:b option; do
 	case "${option}" in
 		p )
-			path=${OPTARG}
+			setpath ${OPTARG}
 			;;
 		b )
-			build=1
-			BUILD=""
+			BUILD=1
 			;;
 	esac
 done
 
-path="${path:-/usr/bin}"
-build=${build:-0}
-
-if [ -d $path -a -w $path ]; then
-	e "Path is set to $path"
-else
-	ee "Please specify a valid and writable path"
-fi
-
-
 shift $((OPTIND-1))
+
 
 if [ -z "$scripts" ]; then
 	e "Installing all scripts"
@@ -64,7 +68,7 @@ else
 fi
 
 
-if [ $build -eq 1 ]; then
+if [ $BUILD -eq 1 ]; then
 	BUILD="#!/bin/bash\n\n# Compiled script from several utilities.\n# Path: $path\n# Date: $(date +"%Y-%m-%d %H:%M:%S")\n"
 
 	for script in "${scripts[@]}"; do
@@ -74,7 +78,7 @@ if [ $build -eq 1 ]; then
 			BUILD="$BUILD\n\n$script()\n{\n"
 
 			while read line; do
-				if [ $line = \#* -o $line = "" ]; then
+				if [ "$line" = \#* -o "$line" = "" ]; then
 					continue
 				fi
 
@@ -98,6 +102,7 @@ if [ $build -eq 1 ]; then
 
 	grep -R "[ -f $path/$SCRIPTNAME ] && source $path/$SCRIPTNAME" /etc/bash.bashrc &> /dev/null
 	[ $? -eq 0 ] || echo -e "[ -f $path/$SCRIPTNAME ] && source $path/$SCRIPTNAME" >> /etc/bash.bashrc
+
 
 	e "\nCompilation done." 32
 else
