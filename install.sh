@@ -69,12 +69,12 @@ if [ $build -eq 1 ]; then
 
 	for script in "${scripts[@]}"; do
 		script=`basename $script`
-		if [[ -f "$DIR/scripts/$script" && -s "$DIR/scripts/$script" ]]; then
+		if [ -f "$DIR/scripts/$script" -a -s "$DIR/scripts/$script" ]; then
 			e "\nCompiling $script"
 			BUILD="$BUILD\n\n$script()\n{\n"
 
 			while read line; do
-				if [[ $line == \#* || $line == "" ]]; then
+				if [ $line = \#* -o $line = "" ]; then
 					continue
 				fi
 
@@ -103,7 +103,7 @@ if [ $build -eq 1 ]; then
 else
 	for script in "${scripts[@]}"; do
 		script=`basename $script`
-		if [[ -f "$DIR/scripts/$script" && -s "$DIR/scripts/$script" ]]; then
+		if [ -f "$DIR/scripts/$script" -a -s "$DIR/scripts/$script" ]; then
 			e "\nInstalling $script"
 			cp -r "$DIR/scripts/$script" "$path" || e "Installing $script failed" 31
 
