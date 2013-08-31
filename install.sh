@@ -88,8 +88,10 @@ if [ $build -eq 1 ]; then
 		fi
 	done
 
-	echo -e "$BUILD" > "$path/utilities"
-	echo -e "[ -f $path/utilities ] && source $path/utilities" >> /etc/bash.bashrc
+	echo -e "$BUILD" > "$path/utilities.sh"
+
+	grep -R "[ -f $path/utilities ] && source $path/utilities.sh" /etc/bash.bashrc &> /dev/null
+	[ $? -eq 0 ] || echo -e "[ -f $path/utilities ] && source $path/utilities.sh" >> /etc/bash.bashrc
 
 	e "Compilation done." 32
 else

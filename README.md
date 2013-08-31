@@ -11,11 +11,10 @@ Download specific scripts from the ````scripts```` directory to your path.
 
 ### Method two
 
-* Clone this repository and run ````./install.sh [-p PATH] [SCRIPT1 [SCRIPT2]]````
-* Clone this repository and run ````./build.sh [-p PATH] [SCRIPT1 [SCRIPT2]]````
+Clone this repository and run ````./install.sh [-p PATH] [-b] [SCRIPT1 [SCRIPT2]]````
 
 Don't pass any scriptname for installing all scripts
 
-Put ````source(PATH/utilities.sh)```` in your bash login script
+Put ````source PATH/utilities.sh```` in your bash login script
 
 ````PATH```` is ````/usr/bin```` by default.
