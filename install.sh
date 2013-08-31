@@ -30,13 +30,12 @@ ee()
 ## Set path
 setpath()
 {
-	[ -z "$2" ] || lock_path=1
-	[[ -z "$1" && $lock_path -ne 1 ]] || path="$1"
+	[ -z "$1" ] || path="$1"
 
 	if [ -d $path -a -w $path ]; then
 		e "Path is set to $path"
 	else
-		ee "$path is not writable"
+		ee "Please specify a valid and writable path"
 	fi
 }
 
@@ -49,7 +48,7 @@ fi
 while getopts p:b option; do
 	case "${option}" in
 		p )
-			setpath ${OPTARG} 1
+			setpath ${OPTARG}
 			;;
 		b )
 			BUILD=1
@@ -69,8 +68,6 @@ fi
 
 
 if [ $BUILD -eq 1 ]; then
-	[ -d "/etc/profile.d" ] && setpath "/etc/profile.d"
-
 	BUILD="#!/bin/bash\n\n# Compiled script from several utilities.\n# Path: $path\n# Date: $(date +"%Y-%m-%d %H:%M:%S")\n"
 
 	for script in "${scripts[@]}"; do
