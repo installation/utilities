@@ -7,6 +7,7 @@
 # Version: 1.0
 
 DIR=$(cd `dirname $0` && pwd)
+SCRIPTNAME="utilities.sh"
 
 # Echo colored text
 e()
@@ -77,7 +78,7 @@ if [ $build -eq 1 ]; then
 					continue
 				fi
 
-				line="${line//exit//return}"
+				line="${line//exit/return}"
 				BUILD="$BUILD$line\n"
 			done < "$DIR/scripts/$script"
 			BUILD="$BUILD}"
@@ -88,15 +89,15 @@ if [ $build -eq 1 ]; then
 		fi
 	done
 
-	echo -e "$BUILD" > "$path/utilities.sh"
+	echo -e "$BUILD" > "$path/$SCRIPTNAME"
 
-	if [ ! -x "$path/utilities.sh" ]; then
+	if [ ! -x "$path/$SCRIPTNAME" ]; then
 		e "\nAdding execute permission to script"
-		chmod +x "$path/utilities.sh" || e "Cannot add execute permission to script" 31
+		chmod +x "$path/$SCRIPTNAME" || e "Cannot add execute permission to script" 31
 	fi
 
-	grep -R "[ -f $path/utilities ] && source $path/utilities.sh" /etc/bash.bashrc &> /dev/null
-	[ $? -eq 0 ] || echo -e "[ -f $path/utilities ] && source $path/utilities.sh" >> /etc/bash.bashrc
+	grep -R "[ -f $path/$SCRIPTNAME ] && source $path/$SCRIPTNAME" /etc/bash.bashrc &> /dev/null
+	[ $? -eq 0 ] || echo -e "[ -f $path/$SCRIPTNAME ] && source $path/$SCRIPTNAME" >> /etc/bash.bashrc
 
 	e "\nCompilation done." 32
 else
