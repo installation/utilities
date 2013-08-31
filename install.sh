@@ -59,7 +59,7 @@ done
 shift $((OPTIND-1))
 
 
-if [ -z "$scripts" ]; then
+if [[ -z "$scripts" && $BUILD -eq 0 ]]; then
 	e "Installing all scripts"
 	scripts=("$DIR/scripts"/*)
 else
@@ -68,6 +68,7 @@ fi
 
 
 if [ $BUILD -eq 1 ]; then
+	e "Compiling all scripts"
 	BUILD="#!/bin/bash\n\n# Compiled script from several utilities.\n# Path: $path\n# Date: $(date +"%Y-%m-%d %H:%M:%S")\n"
 
 	for script in "${scripts[@]}"; do
