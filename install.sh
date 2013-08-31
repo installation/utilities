@@ -84,7 +84,7 @@ if [ $build -eq 1 ]; then
 
 			e "$script compiled" 32
 		else
-			ee "\nScript $script not found or empty" 2
+			e "\nScript $script not found or empty" 31
 		fi
 	done
 
@@ -93,7 +93,7 @@ if [ $build -eq 1 ]; then
 	grep -R "[ -f $path/utilities ] && source $path/utilities.sh" /etc/bash.bashrc &> /dev/null
 	[ $? -eq 0 ] || echo -e "[ -f $path/utilities ] && source $path/utilities.sh" >> /etc/bash.bashrc
 
-	e "Compilation done." 32
+	e "\nCompilation done." 32
 else
 	for script in "${scripts[@]}"; do
 		script=`basename $script`
@@ -107,7 +107,8 @@ else
 			fi
 			e "$script installed" 32
 		else
-			ee "\nScript $script not found" 2
+			e "\nScript $script not found" 31
 		fi
 	done
+	e "\nInstallation done." 32
 fi
