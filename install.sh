@@ -8,7 +8,6 @@
 
 DIR=$(cd `dirname $0` && pwd)
 path="${path:-/usr/bin}"
-SCRIPTNAME="utilities.sh"
 BUILD=${BUILD:-0}
 
 # Echo colored text
@@ -31,12 +30,13 @@ ee()
 ## Set path
 setpath()
 {
-	[ -z "$1" ] || path="$1"
+	[ -z "$2" ] || lock_path=1
+	[[ -z "$1" && $lock_path -ne 1 ]] || path="$1"
 
 	if [ -d $path -a -w $path ]; then
 		e "Path is set to $path"
 	else
-		ee "Please specify a valid and writable path"
+		ee "$path is not writable"
 	fi
 }
 
@@ -49,7 +49,7 @@ fi
 while getopts p:b option; do
 	case "${option}" in
 		p )
-			setpath ${OPTARG}
+			setpath ${OPTARG} 1
 			;;
 		b )
 			BUILD=1
@@ -69,16 +69,18 @@ fi
 
 
 if [ $BUILD -eq 1 ]; then
+	[ -d "/etc/profile.d" ] && setpath "/etc/profile.d"
+
 	BUILD="#!/bin/bash\n\n# Compiled script from several utilities.\n# Path: $path\n# Date: $(date +"%Y-%m-%d %H:%M:%S")\n"
 
 	for script in "${scripts[@]}"; do
 		script=`basename $script`
-		if [ -f "$DIR/scripts/$script" -a -s "$DIR/scripts/$script" ]; then
+		if [[ -f "$DIR/scripts/$script" && -s "$DIR/scripts/$script" ]]; then
 			e "\nCompiling $script"
 			BUILD="$BUILD\n\n$script()\n{\n"
 
 			while read line; do
-				if [ "$line" = \#* -o "$line" = "" ]; then
+				if [[ "$line" == \#* || "$line" == "" ]]; then
 					continue
 				fi
 
@@ -93,22 +95,22 @@ if [ $BUILD -eq 1 ]; then
 		fi
 	done
 
-	echo -e "$BUILD" > "$path/$SCRIPTNAME"
+	echo -e "$BUILD" > "$path/utilities.sh"
 
-	if [ ! -x "$path/$SCRIPTNAME" ]; then
-		e "\nAdding execute permission to script"
-		chmod +x "$path/$SCRIPTNAME" || e "Cannot add execute permission to script" 31
+	if [ ! -x "$path/utilities.sh" ]; then
+		e "\nAdding execute permission to $path/utilities.sh"
+		chmod +x "$path/utilities.sh" || e "Cannot add execute permission to $path/utilities.sh" 31
 	fi
 
-	grep -R "[ -f $path/$SCRIPTNAME ] && source $path/$SCRIPTNAME" /etc/bash.bashrc &> /dev/null
-	[ $? -eq 0 ] || echo -e "[ -f $path/$SCRIPTNAME ] && source $path/$SCRIPTNAME" >> /etc/bash.bashrc
+	grep -R "[ -f $path/utilities.sh ] && source $path/utilities.sh" /etc/bash.bashrc &> /dev/null
+	[ $? -eq 0 ] || echo -e "[ -f $path/utilities.sh ] && source $path/utilities.sh" >> /etc/bash.bashrc
 
 
 	e "\nCompilation done." 32
 else
 	for script in "${scripts[@]}"; do
 		script=`basename $script`
-		if [ -f "$DIR/scripts/$script" -a -s "$DIR/scripts/$script" ]; then
+		if [[ -f "$DIR/scripts/$script" && -s "$DIR/scripts/$script" ]]; then
 			e "\nInstalling $script"
 			cp -r "$DIR/scripts/$script" "$path" || e "Installing $script failed" 31
 
