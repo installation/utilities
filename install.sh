@@ -90,6 +90,11 @@ if [ $build -eq 1 ]; then
 
 	echo -e "$BUILD" > "$path/utilities.sh"
 
+	if [ ! -x "$path/utilities.sh" ]; then
+		e "\nAdding execute permission to script"
+		chmod +x "$path/utilities.sh" || e "Cannot add execute permission to script" 31
+	fi
+
 	grep -R "[ -f $path/utilities ] && source $path/utilities.sh" /etc/bash.bashrc &> /dev/null
 	[ $? -eq 0 ] || echo -e "[ -f $path/utilities ] && source $path/utilities.sh" >> /etc/bash.bashrc
 
